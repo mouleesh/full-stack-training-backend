@@ -5,15 +5,20 @@ const router = Router();
 
 // This API is used to get all the questions
 router.get('/questions', async (req, res) => {
-    const questions = await questionModal.find({});
+    const questions = await questionModal.find({}).populate('subject').populate('topic');
     res.json(questions)
 })
 
 // This API is used create a new question
 router.post('/questions', async (req, res) => { 
-    const { question, answer, subject, topic } = req.body;
+    const { question, answer, subject, topic, codeSnippet, example } = req.body;
     const newQuestion = new questionModal({
         question,
+        answer,
+        subject,
+        topic,
+        codeSnippet,
+        example
     });
 
     await newQuestion.save();
