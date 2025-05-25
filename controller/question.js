@@ -3,16 +3,20 @@ import questionModal from './../model/questions.js';
 
 const router = Router();
 
-// This API is used to get all the questions
+// This API is used to get all the questions and if there is url param subject_id then it will filter the questions with that subject id
 router.get('/questions', async (req, res) => {
-    const questions = await questionModal.find({}).populate('subject').populate('topic');
+    const { subject_id } = req.query;
+    const filter = subject_id ? { subject: subject_id } : {};
+
+    const questions = await questionModal.find(filter).populate('subject').populate('topic');
     res.json(questions)
 })
 
 // This API is used create a new question
 router.post('/questions', async (req, res) => { 
-    const { question, answer, subject, topic, codeSnippet, example } = req.body;
+    const { title, question, answer, subject, topic, codeSnippet, example } = req.body;
     const newQuestion = new questionModal({
+        title,
         question,
         answer,
         subject,
@@ -22,19 +26,27 @@ router.post('/questions', async (req, res) => {
     });
 
     await newQuestion.save();
-    res.status(201).json(newQuestion);
+    const populatedQuestion = await questionModal.findById(newQuestion._id).populate('subject').populate('topic');
+    res.status(201).json(populatedQuestion);
 });
 
 // This API is used for updating a question with a given id
 router.put('/questions/:id', async (req, res) => {
-    const { question, answer, subject, topic } = req.body;
+    const { title, question, answer, subject, topic, codeSnippet, example } = req.body;
     const updatedQuestion = await questionModal.findByIdAndUpdate(
         req.params.id,
-        {
+        {   
+            title,
             question,
+            answer,
+            subject,
+            topic,
+            codeSnippet,
+            example,
         },
         { new: true }
-    );
+    ).populate('subject').populate('topic');
+
     if (!updatedQuestion) {
         return res.status(404).json({ message: "Question not found" });
     }

@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
  
 const questionSchema = new mongoose.Schema({
-    question: {
+    title: {
         type: String,
         required: true,
+    },
+    question: {
+        type: String,
+        required: false, // Made optional to allow questions without a detailed description
     },
     answer: {
         type: String,

@@ -6,7 +6,10 @@ const router = Router();
 
 // This API is used to get all the subjects
 router.get('/subjects', async (req, res) => {
-    const subjects = await subjectModal.find();
+    const { subject_name } = req.query;
+    const filter = subject_name ? { name: subject_name } : {};
+
+    const subjects = await subjectModal.find(filter);
     const topics = await topicModal.find({ subject: { $in: subjects.map((sub) => sub._id) } });
     const subjectsAndTopics = subjects.map((sub) => ({
         ...sub.toJSON(),
@@ -14,7 +17,7 @@ router.get('/subjects', async (req, res) => {
     }));
 
     res.json(subjectsAndTopics);
-})
+});
 
 // This API is used for creating a new subject and creating multiple topics with the created subject id.
 router.post('/subjects', async (req, res) => {
