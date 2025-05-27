@@ -14,7 +14,7 @@ router.get('/questions', async (req, res) => {
 
 // This API is used create a new question
 router.post('/questions', async (req, res) => { 
-    const { title, question, answer, subject, topic, codeSnippet, example } = req.body;
+    const { title, question, answer, subject, topic, codeSnippet, example, difficulty } = req.body;
     const newQuestion = new questionModal({
         title,
         question,
@@ -22,7 +22,8 @@ router.post('/questions', async (req, res) => {
         subject,
         topic,
         codeSnippet,
-        example
+        example,
+        difficulty
     });
 
     await newQuestion.save();
@@ -32,7 +33,7 @@ router.post('/questions', async (req, res) => {
 
 // This API is used for updating a question with a given id
 router.put('/questions/:id', async (req, res) => {
-    const { title, question, answer, subject, topic, codeSnippet, example } = req.body;
+    const { title, question, answer, subject, topic, codeSnippet, example, difficulty } = req.body;
     const updatedQuestion = await questionModal.findByIdAndUpdate(
         req.params.id,
         {   
@@ -43,6 +44,7 @@ router.put('/questions/:id', async (req, res) => {
             topic,
             codeSnippet,
             example,
+            difficulty
         },
         { new: true }
     ).populate('subject').populate('topic');
