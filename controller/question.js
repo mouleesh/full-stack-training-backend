@@ -1,6 +1,7 @@
 import { Router } from "express";
 import questionModal from './../model/questions.js';
 import authMiddleware from "../middleware/authentication.js";
+import authorizeRoles from "../middleware/authorizeRole.js";
 
 const router = Router();
 
