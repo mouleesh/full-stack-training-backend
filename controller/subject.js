@@ -1,6 +1,7 @@
 import { Router } from "express";
 import topicModal from "../model/topics.js";
 import subjectModal from "../model/subjects.js";
+import authMiddleware from "../middleware/authentication.js";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.get('/subjects', async (req, res) => {
 });
 
 // This API is used for creating a new subject and creating multiple topics with the created subject id.
-router.post('/subjects', async (req, res) => {
+router.post('/subjects', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => {
     const { name, topics } = req.body;
     const subjectInstance = new subjectModal({ name });
     const subject = await subjectInstance.save();
@@ -37,7 +38,7 @@ router.post('/subjects', async (req, res) => {
 });
 
 // This API is used for updating a subject for given subject id in the path and then it udpates all the topics found in the body. if there are any new topics then it creates them.
-router.put('/subjects/:id', async (req, res) => {
+router.put('/subjects/:id', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => {
     const { name, topics } = req.body;
     const subject = await subjectModal.findByIdAndUpdate(
         req.params.id,
@@ -58,7 +59,7 @@ router.put('/subjects/:id', async (req, res) => {
 });
 
 //This API is used for deleting a subject with a given id and all the topics related to that subject.
-router.delete('/subjects/:id', async (req, res) => {
+router.delete('/subjects/:id', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => {
     const subject = await subjectModal.findByIdAndDelete(req.params.id);
     if (!subject) {
         return res.status(404).json({ message: "Subject not found" });

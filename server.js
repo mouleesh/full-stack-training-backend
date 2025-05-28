@@ -24,4 +24,4 @@ app.use(contactFormRouter);
 
 app.listen(port, () => {
   console.log(`Full Stack Training Backend Server is running on Port No. ${port}`)
-})
+});

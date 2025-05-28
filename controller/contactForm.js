@@ -1,10 +1,11 @@
 import { Router } from "express";
 import contactFormModel from "../model/contactForm.js";
+import authMiddleware from "../middleware/authentication.js";
 
 const router = Router();
 
 // This API is used to get all the contact requests.
-router.get('/contact-form', async (req, res) => {
+router.get('/contact-form', authMiddleware, authorizeRoles('admin'), async (req, res) => {
     try {
         const contactRequests = await contactFormModel.find({}).sort({ createdAt: -1 });
         res.status(200).json(contactRequests);
@@ -39,7 +40,7 @@ router.post('/contact-form', async (req, res) => {
 });
 
 // This API is used to update the status of a contact request.
-router.patch('/contact-form/:id', async (req, res) => {
+router.patch('/contact-form/:id', authMiddleware, authorizeRoles('admin'), async (req, res) => {
     const { status } = req.body;
 
     // Validate status field

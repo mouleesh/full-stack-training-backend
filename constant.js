@@ -1,0 +1,1 @@
+export const JWT_SECRET = 'black_eye_135'

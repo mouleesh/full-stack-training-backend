@@ -1,9 +1,11 @@
 import { Router } from "express";
 import userModal from './../model/users.js';
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../constant.js";
+import authMiddleware from "../middleware/authentication.js";
+import authorizeRoles from "../middleware/authorizeRoleMiddleware.js";
 
 const router = Router();
-
 
 // This API is used for login
 router.post('/login', async (req, res) => { 
@@ -15,14 +17,13 @@ router.post('/login', async (req, res) => {
         return res.status(401).json({ message: "Invalid username or password" });
     } else {
         // If the user is found, generate a jwt token and send it back to the client
-        const token = jwt.sign({ id: user._id, username: username }, "SECRET", { expiresIn: '365d' });
+        const token = jwt.sign({ id: user._id, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: '365d' });
         res.status(200).json({ token });
     }
-    
 });
 
 //This API returns all the users
-router.get('/users', async (req, res) => {
+router.get('/users', authMiddleware, authorizeRoles('admin'), async (req, res) => {
     try {
         const users = await userModal.find({}).select('-password');
         res.status(200).json(users);
@@ -62,7 +63,7 @@ router.post('/users', async (req, res) => {
 }); 
 
 //This API is used to update an existing user by patching some fields not all
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
@@ -87,7 +88,7 @@ router.patch('/users/:id', async (req, res) => {
 })
 
 //This API is used to delete a user by id
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const deletedUser = await userModal.findByIdAndDelete(id);

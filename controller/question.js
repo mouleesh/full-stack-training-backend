@@ -1,5 +1,6 @@
 import { Router } from "express";
 import questionModal from './../model/questions.js';
+import authMiddleware from "../middleware/authentication.js";
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.get('/questions', async (req, res) => {
 })
 
 // This API is used create a new question
-router.post('/questions', async (req, res) => { 
+router.post('/questions', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => { 
     const { title, question, answer, subject, topic, codeSnippet, example, difficulty } = req.body;
     const newQuestion = new questionModal({
         title,
@@ -32,7 +33,7 @@ router.post('/questions', async (req, res) => {
 });
 
 // This API is used for updating a question with a given id
-router.put('/questions/:id', async (req, res) => {
+router.put('/questions/:id', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => {
     const { title, question, answer, subject, topic, codeSnippet, example, difficulty } = req.body;
     const updatedQuestion = await questionModal.findByIdAndUpdate(
         req.params.id,
@@ -56,7 +57,7 @@ router.put('/questions/:id', async (req, res) => {
 });
 
 // This API is used for deleting a question with a given id
-router.delete('/questions/:id', async (req, res) => {
+router.delete('/questions/:id', authMiddleware, authorizeRoles('admin', 'contributor'), async (req, res) => {
     const deletedQuestion = await questionModal.findByIdAndDelete(req.params.id);
     if (!deletedQuestion) {
         return res.status(404).json({ message: "Question not found" });
