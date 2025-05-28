@@ -3,7 +3,7 @@ import userModal from './../model/users.js';
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../constant.js";
 import authMiddleware from "../middleware/authentication.js";
-import authorizeRoles from "../middleware/authorizeRoleMiddleware.js";
+import authorizeRoles from "../middleware/authorizeRole.js";
 
 const router = Router();
 

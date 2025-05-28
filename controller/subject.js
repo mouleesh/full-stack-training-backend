@@ -2,6 +2,7 @@ import { Router } from "express";
 import topicModal from "../model/topics.js";
 import subjectModal from "../model/subjects.js";
 import authMiddleware from "../middleware/authentication.js";
+import authorizeRoles from "../middleware/authorizeRole.js";
 
 const router = Router();
 
