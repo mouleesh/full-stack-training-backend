@@ -9,7 +9,7 @@ const router = Router();
 
 // This API is used for login
 router.post('/login', async (req, res) => { 
-    const { mobile, password } = req.body;
+    const { username: mobile, password } = req.body;
 
     const user = await userModal.find({ mobile, password });
     
